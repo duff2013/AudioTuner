@@ -87,7 +87,7 @@ SAMPLE_SKIP --> This sets your sample window length and sampling rate. Sample Wi
     <b>YIN Algorithm</b>
     <ol>
         <li><b>Difference Function -</b> Squared difference of the (signal - signal lag(<img src="http://rogercortesi.com/eqn/tempimagedir/eqn7483.png"/></img>))</li>
-            <img src="http://rogercortesi.com/eqn/tempimagedir/eqn1752.png" />
+            <img src="http://rogercortesi.com/eqn/tempimagedir/eqn4513.png" />
         <li><b>Cumulative Mean Normalized Difference Function -</b> Calculate the cumulative mean on the normalized difference signal</li>
             <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3269.png" />
         <li><b>Absolute Threshold -</b> Fix for subharmonic error with Autocorrelation, choose (<img src="http://rogercortesi.com/eqn/tempimagedir/eqn7483.png"/></img>) that gives a minimum <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3518.png"/></li>
