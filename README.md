@@ -39,6 +39,7 @@
 
 >Many optimizations have been done to the [YIN] algorithm for frequencies between 29-360Hz. While its still using a brute force method ( n<sup>2</sup> ) for finding fundamental frequency f(o) it is tuned to skip <b>tau</b> values that are out of its frequency range and focus mostly on frequencies found in the bass and guitar. The input is double buffered so while you are processing one buffer it is filling the other to double throuput. There are a few parameters that can be adjusted to "dial in" the algorithm for better estimations. The defaults are what I found that have the best trade off for speed and accuracy.
 <h4>AudioTuner.h</h4>
+
 ```
 /****************************************************************/
 #define SAMPLE_RATE_DIVIDE_BY_1 1      // 44100    sample rate
