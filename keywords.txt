@@ -1,0 +1,25 @@
+#######################################
+# Syntax Coloring Map AudioTuner.h
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+AudioTuner	KEYWORD1
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+AudioTuner	KEYWORD2
+available	KEYWORD2
+probability	KEYWORD2
+read	KEYWORD2
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+threshold	LITERAL1
+periodicity	LITERAL1
+tuner	LITERAL1
