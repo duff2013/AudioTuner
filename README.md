@@ -41,7 +41,7 @@
                                                              \_/
 
 >Many optimizations have been done to the [YIN] algorithm for frequencies between 29-360Hz. 
->>While its still using a brute force method ( n<sup>2</sup> ) for finding the fundamental frequency f<sub>o</sub>, it is tuned to skip certain <b>tau</b> (<img src="http://rogercortesi.com/eqn/tempimagedir/eqn2874.jpg"/>) values and focus mostly on frequencies found in the bass and guitar. 
+>>While its still using a brute force method ( n<sup>2</sup> ) for finding the fundamental frequency f<sub>o</sub>, it is tuned to skip certain <b>tau</b> (<img src="http://rogercortesi.com/eqn/tempimagedir/eqn7483.png"/></img>) values and focus mostly on frequencies found in the bass and guitar. 
 >>>The input is double buffered so while you are processing one buffer it is filling the other to double throughput. 
 >>>>There are a few parameters that can be adjusted to "dial in" the algorithm for better estimations. The defaults are what I found that have the best trade off for speed and accuracy.
 
@@ -86,11 +86,11 @@ SAMPLE_SKIP --> This sets your sample window length and sampling rate. Sample Wi
 <div>
     <b>YIN Algorithm</b>
     <ol>
-        <li><b>Difference Function -</b> Squared difference of the (signal - signal lag(<img src="http://rogercortesi.com/eqn/tempimagedir/eqn2874.jpg"/>))</li>
+        <li><b>Difference Function -</b> Squared difference of the (signal - signal lag(<img src="http://rogercortesi.com/eqn/tempimagedir/eqn7483.png"/></img>))</li>
             <img src="http://rogercortesi.com/eqn/tempimagedir/eqn1752.png" />
         <li><b>Cumulative Mean Normalized Difference Function -</b> Calculate the cumulative mean on the normalized difference signal</li>
             <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3269.png" />
-        <li><b>Absolute Threshold -</b> Fix for subharmonic error with Autocorrelation, choose (<img src="http://rogercortesi.com/eqn/tempimagedir/eqn2874.jpg"/>) that gives a minimum <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3518.png"/></li>
+        <li><b>Absolute Threshold -</b> Fix for subharmonic error with Autocorrelation, choose (<img src="http://rogercortesi.com/eqn/tempimagedir/eqn7483.png"/></img>) that gives a minimum <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3518.png"/></li>
     </ol>
 </div>
 
