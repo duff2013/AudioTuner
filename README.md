@@ -3,7 +3,41 @@
 
 >Software algorithm ([YIN]) for guitar and bass tuning using a Teensy Audio Library. This audio object's algorithm can be some what memory and processor hungry but will allow you to detect with fairly good accuracy the fundamental frequencies from electric guitars and basses. You can install this as a normal Arduino Library and will work with the Audio Library, no need to edit the Audio libraries source now.
 
->Many optimizations have been done to the [YIN] algorithm for frequencies between 29-360Hz. While its still using a brute force method ( n<sup>2</sup> ) for finding fundamental frequency f(o) it is tuned to skip <b>tau</b> values that are out of its frequency range and focus mostly on frequencies found in the bass and guitar. The input is double buffered so while you are processing one buffer it is filling the other to double throuput. There are a few parameters that can be adjusted to "dial in" the algorithm for better estimations. The defaults are what I found that have the best trade off for speed and accuracy. 
+>Many optimizations have been done to the [YIN] algorithm for frequencies between 29-360Hz. While its still using a brute force method ( n<sup>2</sup> ) for finding fundamental frequency f(o) it is tuned to skip <b>tau</b> values that are out of its frequency range and focus mostly on frequencies found in the bass and guitar. The input is double buffered so while you are processing one buffer it is filling the other to double throuput. There are a few parameters that can be adjusted to "dial in" the algorithm for better estimations. The defaults are what I found that have the best trade off for speed and accuracy.
+
+<!-- language: lang-none -->
+      Hookup Guide - 1.2v DC Bias and High Pass Filter - No Amplification
+
+                       *--------------------------------------------------*   
+                       |                                                  |
+                       |                                    | ' |         |
+                       *------------/\/\/\-------------*    |' '|         | 
+                       |             47K               |   _|_'_|_        |
+                       |                               |  |` ` ` `|       |
+                       *---)|+--*                      |  | ` ` ` |       |
+                       |  10uF  |                      |  |` ` ` `|       |
+                       |        |                      |  | ` ` ` |       |
+     _______________   *-/\/\/\-*                      |  |` ` ` `|       |
+    |GND  |___|  Vin|  |  2.2K  |                      |  | ` ` ` |       |
+    |0      T   AGND|<-*        |                      |  |` ` ` `|       |
+    |1      E   3.3V|>--/\/\/\--*--/\/\/\---*          |  | ` ` ` |       |
+    |2      E     23|    10K        47K     |          |  |` ` ` `|       |
+    |3      N     22|                       |          |  | ` ` ` |       |
+    |4      S     21|                       |          |   \_`_`_/        |
+    |5      Y     20|                       |          |    | :`|         |
+    |6     3.1    19|                       |          |    | S`|         |
+    |7            18|                       |  REMOVE  |    | H`|         |
+    |8            17|                       |    DC    |    | I`|         |
+    |9         A2/16|<---SIGNAL-1.2v-BIAS---*---+|(----*    | E`|>--ANGD--*
+    |10    ---    15|                     1.2V  10uF   |    | L`|
+    |11   |(`)|   14|                      DC          |    | D`|
+    |12    ---    13|                                  |    | :`|
+     ---------------                                   |    |===|
+                                                       |     \_/
+                                                       |     /T\
+                                                       |    - I -
+                                                       *---<\ P /
+                                                             \_/
 
 <h4>AudioTuner.h</h4>
 ```
@@ -41,40 +75,5 @@ SAMPLE_SKIP --> This sets your sample window lenght and sampling rate. Sample Wi
 (NUM_SAMPLES * SAMPLE_SKIP) of the ~44100 samples every second. Sample Rate is 
 (AUDIO_SAMPLE_RATE_EXACT / SAMPLE_SKIP). 
 ```
-<!-- language: lang-none -->
-      Hookup Guide - 1.2v DC Bias and High Pass Filter - No Amplification
-
-                       *--------------------------------------------------*   
-                       |                                                  |
-                       |                                    | ' |         |
-                       *------------/\/\/\-------------*    |' '|         | 
-                       |             47K               |   _|_'_|_        |
-                       |                               |  |` ` ` `|       |
-                       *---)|+--*                      |  | ` ` ` |       |
-                       |  10uF  |                      |  |` ` ` `|       |
-                       |        |                      |  | ` ` ` |       |
-     _______________   *-/\/\/\-*                      |  |` ` ` `|       |
-    |GND  |___|  Vin|  |  2.2K  |                      |  | ` ` ` |       |
-    |0      T   AGND|<-*        |                      |  |` ` ` `|       |
-    |1      E   3.3V|>--/\/\/\--*--/\/\/\---*          |  | ` ` ` |       |
-    |2      E     23|    10K        47K     |          |  |` ` ` `|       |
-    |3      N     22|                       |          |  | ` ` ` |       |
-    |4      S     21|                       |          |   \_`_`_/        |
-    |5      Y     20|                       |          |    | :`|         |
-    |6     3.1    19|                       |          |    | S`|         |
-    |7            18|                       |  REMOVE  |    | H`|         |
-    |8            17|                       |    DC    |    | I`|         |
-    |9         A2/16|<---SIGNAL-1.2v-BIAS---*---+|(----*    | E`|>--ANGD--*
-    |10    ---    15|                     1.2V  10uF   |    | L`|
-    |11   |(`)|   14|                      DC          |    | D`|
-    |12    ---    13|                                  |    | :`|
-     ---------------                                   |    |===|
-                                                       |     \_/
-                                                       |     /T\
-                                                       |    - I -
-                                                       *---<\ P /
-                                                             \_/
-
-
 
 [YIN]:http://recherche.ircam.fr/equipes/pcm/cheveign/pss/2002_JASA_YIN.pdf
