@@ -1,9 +1,5 @@
-/* Audio Library for Teensy 3.X
+/* Audio Library Guitar and Bass Tuner
  * Copyright (c) 2015, Colin Duffy
- *
- * Development of this audio library was funded by PJRC.COM, LLC by sales of
- * Teensy and Audio Adaptor boards.  Please support PJRC's efforts to develop
- * open source software by purchasing Teensy or other PJRC products.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

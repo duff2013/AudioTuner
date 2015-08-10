@@ -1,4 +1,4 @@
-/* Audio Library Guitar Tuner
+/* Audio Library Guitar and Bass Tuner
  * Copyright (c) 2015, Colin Duffy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
