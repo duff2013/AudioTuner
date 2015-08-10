@@ -1,11 +1,19 @@
-#Guitar and Bass Tuner Library for Teensy 3.1 v2.0
+#Guitar and Bass Tuner Library 
+#Teensy 3.1 v2.0
 
->Software algorithm ([YIN]) for guitar and bass tuning using a Teensy Audio Library. This audio object's algorithm can be some what memory and processor hungry but will allow you to detect with fairly good accurcey the fundumential frequencies from electric guitars and basses. You can install this as a normal Arduino Library and will work with the Audio Library, no need to edit the Audio libraries source now.
+>Software algorithm ([YIN]) for guitar and bass tuning using a Teensy Audio Library. This audio object's algorithm can be some what memory and processor hungry but will allow you to detect with fairly good accuracy the fundamental frequencies from electric guitars and basses. You can install this as a normal Arduino Library and will work with the Audio Library, no need to edit the Audio libraries source now.
 
->Many optimizations have been done to the [YIN] algorithm for frequencies between 29-360Hz. While its still using a brute force method (n<sup>2</sup>)for finding fundemential frequency f(o) it is tuned to skip <b>tau</b> values that are out of its frequency range and focus mostly on frequencies found in bass and guitar. There a few parameters that can be adjusted to "dial in" the algorithm better use. Te defaults are what I find that have the trade off for speed and accurcy.
+>Many optimizations have been done to the [YIN] algorithm for frequencies between 29-360Hz. While its still using a brute force method ( n<sup>2</sup> ) for finding fundamental frequency f(o) it is tuned to skip <b>tau</b> values that are out of its frequency range and focus mostly on frequencies found in the bass and guitar. The input is double buffered so while you are processing one buffer it is filling the other to double throuput. There are a few parameters that can be adjusted to "dial in" the algorithm for better estimations. The defaults are what I found that have the best trade off for speed and accuracy. 
 
+<h4>AudioTuner.h</h4>
 ```
-In AudioTuner.h you can edit these paratemters:
+/****************************************************************/
+#define SAMPLE_RATE_DIVIDE_BY_1 1      // 44100    sample rate
+#define SAMPLE_RATE_DIVIDE_BY_2 2      // 22050    sample rate
+#define SAMPLE_RATE_DIVIDE_BY_4 4      // 11025    sample rate
+#define SAMPLE_RATE_DIVIDE_BY_8 8      // 5512.5   sample rate
+#define SAMPLE_RATE_DIVIDE_BY_16 16    // 2756.25  sample rate
+#define SAMPLE_RATE_DIVIDE_BY_32 32    // 1378.125 sample rate
 /****************************************************************
 *              Safe to adjust these values below               *
 ****************************************************************/
@@ -20,6 +28,16 @@ In AudioTuner.h you can edit these paratemters:
 /****************************************************************/
 ```
 
+```
+SAMPLE_RATE_DIVIDE_BY_x --> This sets 'SAMPLE_SKIP' to pass on every (x) data piont from the Audio Block being saved to the buffer, it determines the sample rate.
+```
+
+```
+NUM_SAMPLES --> This the size of each buffer, there two for double buffering.
+```
+```
+SAMPLE_SKIP --> This sets your sample window lenght and sampling rate. Sample Window Size is (NUM_SAMPLES * SAMPLE_SKIP) of the ~44100 samples every second. Sample Rate is (AUDIO_SAMPLE_RATE_EXACT / SAMPLE_SKIP). 
+```
 <!-- language: lang-none -->
       Hookup Guide - 1.2v DC Bias and High Pass Filter - No Amplification
 
