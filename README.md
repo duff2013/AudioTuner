@@ -3,8 +3,6 @@
     <b>Teensy 3.1 v2.0</b><br>
 </p>
 
-<img src="http://www.sciweavers.org/tex2img.php?eq=%20%5Ctau%20&bc=White&fc=Black&im=png&fs=12&ff=arev&edit=0" align="center" border="0" alt=" \tau " width="15" height="11" />
-
 >Software algorithm ([YIN]) for guitar and bass tuning using a Teensy Audio Library. This audio object's algorithm can be some what memory and processor hungry but will allow you to detect with fairly good accuracy the fundamental frequencies f<sub>o</sub> from electric guitars and basses. 
 >>You can install this as a normal Arduino Library and will work with the Audio Library, no need to edit the Audio libraries source now.
 
@@ -43,7 +41,7 @@
                                                              \_/
 
 >Many optimizations have been done to the [YIN] algorithm for frequencies between 29-360Hz. 
->>While its still using a brute force method ( n<sup>2</sup> ) for finding the fundamental frequency f<sub>o</sub>, it is tuned to skip certain <b>tau</b> values and focus mostly on frequencies found in the bass and guitar. 
+>>While its still using a brute force method ( n<sup>2</sup> ) for finding the fundamental frequency f<sub>o</sub>, it is tuned to skip certain <b>tau</b> (<img src="http://rogercortesi.com/eqn/tempimagedir/eqn2874.jpg"/>) values and focus mostly on frequencies found in the bass and guitar. 
 >>>The input is double buffered so while you are processing one buffer it is filling the other to double throughput. 
 >>>>There are a few parameters that can be adjusted to "dial in" the algorithm for better estimations. The defaults are what I found that have the best trade off for speed and accuracy.
 
@@ -84,5 +82,16 @@ SAMPLE_SKIP --> This sets your sample window length and sampling rate. Sample Wi
 (NUM_SAMPLES * SAMPLE_SKIP) of the ~44100 samples every second. Sample Rate is 
 (AUDIO_SAMPLE_RATE_EXACT / SAMPLE_SKIP). 
 ```
+
+<div>
+    <b>YIN Algorithm</b>
+    <ol>
+        <li><b>Difference Function -</b> Squared difference of the (signal - signal lag(<img src="http://rogercortesi.com/eqn/tempimagedir/eqn2874.jpg"/>))</li>
+            <img src="http://rogercortesi.com/eqn/tempimagedir/eqn1752.png" />
+        <li><b>Cumulative Mean Normalized Difference Function -</b> Calculate the cumulative mean on the normalised difference signal</li>
+            <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3269.png" />
+        <li><b>Absolute Threshold -</b> Fix for subharmonic error with Autocorrelation, choose (<img src="http://rogercortesi.com/eqn/tempimagedir/eqn2874.jpg"/>) that gives a mininum <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3518.png"/></li>
+    </ol>
+</div>
 
 [YIN]:http://recherche.ircam.fr/equipes/pcm/cheveign/pss/2002_JASA_YIN.pdf
