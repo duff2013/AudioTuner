@@ -5,7 +5,7 @@
 >
 [YIN]:http://recherche.ircam.fr/equipes/pcm/cheveign/pss/2002_JASA_YIN.pdf
 <!-- language: lang-none -->
-      Hookup Guide - 1.6v DC Bias and High Pass Filter - No Amplification
+      Hookup Guide - 1.2v DC Bias and High Pass Filter - No Amplification
 
 
                        |----------------------------------------------|
