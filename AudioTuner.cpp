@@ -67,7 +67,7 @@ void AudioTuner::update( void ) {
     release( block );
 
     if ( count >= NUM_SAMPLES ) {
-        digitalWriteFast(2, !digitalReadFast(2));
+        //digitalWriteFast(2, !digitalReadFast(2));
         next_buffer = !next_buffer;
         process_buffer = true;
         tau_global = 1;
@@ -78,7 +78,7 @@ void AudioTuner::update( void ) {
     block_count = count;
     
     if ( process_buffer ) {
-        digitalWriteFast(0, HIGH);
+        //digitalWriteFast(0, HIGH);
         uint16_t tau;
         uint16_t  next;
         next = next_buffer;
@@ -107,23 +107,30 @@ void AudioTuner::update( void ) {
             if ( tau == 0 ) {
                 process_buffer = false;
                 new_output = true;
-                digitalWriteFast(0, LOW);
+                //digitalWriteFast(0, LOW);
                 return;
             }
             else if ( tau >= HALF_BUFFER ) {
                 process_buffer = false;
                 new_output = false;
-                digitalWriteFast(0, LOW);
+                //digitalWriteFast(0, LOW);
                 return;
             }
         } while ( tau <= ( tau_global + 31 ) );
         tau_global = tau;
-        digitalWriteFast(0, LOW);
+        //digitalWriteFast(0, LOW);
     }
 }
 
 /**
- *  process data in from Audio Library interrupt
+ *  check the sampled data for fundmental frequency
+ *
+ *  @param yin  buffer to hold sum*tau value
+ *  @param rs   buffer to hold running sum for sampled window
+ *  @param head buffer index
+ *  @param tau  lag we are currently working on this gets incremented
+ *
+ *  @return tau
  */
 uint16_t AudioTuner::estimate( int64_t *yin, int64_t *rs, uint16_t head, uint16_t tau ) {
     const int64_t *p = ( int64_t * )yin;
