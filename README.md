@@ -3,8 +3,9 @@
 Software algorithm ([YIN]) for guitar and bass tuning using a Teensy Audio Library. This audio object's algorithm is somewhat memory and processor hungry but will allow you to detect lower frequencies than the Audio library's Goertzel algorithm will.
 
 [YIN]:http://recherche.ircam.fr/equipes/pcm/cheveign/pss/2002_JASA_YIN.pdf
-<pre>
-_______________                     _________
+<!-- language: lang-none -->
+
+_______________                    _________
 |GND  |   |  Vin|                   |       |
 |0     ---  AGND|                   |       |
 |1          3.3V|                   |       |
@@ -19,10 +20,9 @@ _______________                     _________
 |10           15|                     |':`|
 |11           14|                     |':`|
 |12           13|                     |===|
- ---------------                      |___|
-                                       \ /
-                                       / \
-                                      -----
-                                      \   /
-                                       \_/
-<pre>
+---------------                      |___|
+\ /
+/ \
+-----
+\   /
+\_/
