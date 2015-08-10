@@ -1,7 +1,6 @@
 #Guitar and Bass Tuner for Teensy 3.1 v2.0
 
-Software algorithm ([YIN]) for guitar and bass tuning using a Teensy Audio Library. This audio object's algorithm is somewhat memory and processor hungry but will allow you to detect lower frequencies than the Audio library's Goertzel algorithm will.
-
+>Software algorithm ([YIN]) for guitar and bass tuning using a Teensy Audio Library. This audio object's algorithm is somewhat memory and processor hungry but will allow you to detect lower frequencies than the Audio library's Goertzel algorithm will.
 [YIN]:http://recherche.ircam.fr/equipes/pcm/cheveign/pss/2002_JASA_YIN.pdf
 <!-- language: lang-none -->
       Hookup Guide
