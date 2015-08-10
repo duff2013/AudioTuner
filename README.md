@@ -3,8 +3,6 @@
 
 >Software algorithm ([YIN]) for guitar and bass tuning using a Teensy Audio Library. This audio object's algorithm can be some what memory and processor hungry but will allow you to detect with fairly good accuracy the fundamental frequencies from electric guitars and basses. You can install this as a normal Arduino Library and will work with the Audio Library, no need to edit the Audio libraries source now.
 
->Many optimizations have been done to the [YIN] algorithm for frequencies between 29-360Hz. While its still using a brute force method ( n<sup>2</sup> ) for finding fundamental frequency f(o) it is tuned to skip <b>tau</b> values that are out of its frequency range and focus mostly on frequencies found in the bass and guitar. The input is double buffered so while you are processing one buffer it is filling the other to double throuput. There are a few parameters that can be adjusted to "dial in" the algorithm for better estimations. The defaults are what I found that have the best trade off for speed and accuracy.
-
 <!-- language: lang-none -->
       Hookup Guide - 1.2v DC Bias and High Pass Filter - No Amplification
 
@@ -39,6 +37,7 @@
                                                        *---<\ P /
                                                              \_/
 
+>Many optimizations have been done to the [YIN] algorithm for frequencies between 29-360Hz. While its still using a brute force method ( n<sup>2</sup> ) for finding fundamental frequency f(o) it is tuned to skip <b>tau</b> values that are out of its frequency range and focus mostly on frequencies found in the bass and guitar. The input is double buffered so while you are processing one buffer it is filling the other to double throuput. There are a few parameters that can be adjusted to "dial in" the algorithm for better estimations. The defaults are what I found that have the best trade off for speed and accuracy.
 <h4>AudioTuner.h</h4>
 ```
 /****************************************************************/
