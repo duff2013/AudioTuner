@@ -11,7 +11,7 @@
 
                        *--------------------------------------------------*   
                        |                                                  |
-                       |                                    | ' |         |
+                       |      Pull Down Resistor            | ' |         |
                        *------------/\/\/\-------------*    |' '|         | 
                        |             47K               |   _|_'_|_        |
                        |                               |  |` ` ` `|       |
@@ -20,15 +20,15 @@
        TEENSY 3.1      |        |                      |  | ` ` ` |       |
      _______________   *-/\/\/\-*                      |  |` ` ` `|       |
     |GND |_____| Vin|  |  2.2K  |                      |  | ` ` ` |       |
-    |0  ----    AGND|<-*        |                      |  |` ` ` `|       |
-    |1 |````|   3.3V|>--/\/\/\--*--/\/\/\---*          |  | ` ` ` |       |
-    |2 |````|     23|    10K        47K     |          |  |` ` ` `|       |
-    |3  ----      22|                       |          |  | ` ` ` |       |
+    |0  -----   AGND|<-*        |                      |  |` ` ` `|       |
+    |1 |`````|  3.3V|>--/\/\/\--*--/\/\/\---*          |  | ` ` ` |       |
+    |2 |     |    23|    10K        47K     |          |  |` ` ` `|       |
+    |3  -----     22|                       |          |  | ` ` ` |       |
     |4 |'|        21|                       |          |   \=====/        |
     |5   ------   20|                       |          |    | :`|         |
-    |6  |::::::|  19|                       |  REMOVE  |    | S`|         |
-    |7  |::::::|  18|                       |    DC    |    | H`|         |
-    |8  |::::::|  17|                       |   BIAS   |    | I`|         |
+    |6 |::::::::| 19|                       |  REMOVE  |    | S`|         |
+    |7 |::::::::| 18|                       |    DC    |    | H`|         |
+    |8 |::::::::| 17|                       |   BIAS   |    | I`|         |
     |9   ------A2/16|<---SIGNAL-1.2v-BIAS---*---+|(----*    | E`|>--ANGD--*
     |10    ---    15|                    1.2VDC  10uF  |    | L`|
     |11   |(`)|   14|                                  |    | D`|
@@ -88,9 +88,9 @@ SAMPLE_SKIP --> This sets your sample window length and sampling rate. Sample Wi
     <ol>
         <li><b>Difference Function -</b> Squared difference of the (signal - signal lag(<img src="http://rogercortesi.com/eqn/tempimagedir/eqn2874.jpg"/>))</li>
             <img src="http://rogercortesi.com/eqn/tempimagedir/eqn1752.png" />
-        <li><b>Cumulative Mean Normalized Difference Function -</b> Calculate the cumulative mean on the normalised difference signal</li>
+        <li><b>Cumulative Mean Normalized Difference Function -</b> Calculate the cumulative mean on the normalized difference signal</li>
             <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3269.png" />
-        <li><b>Absolute Threshold -</b> Fix for subharmonic error with Autocorrelation, choose (<img src="http://rogercortesi.com/eqn/tempimagedir/eqn2874.jpg"/>) that gives a mininum <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3518.png"/></li>
+        <li><b>Absolute Threshold -</b> Fix for subharmonic error with Autocorrelation, choose (<img src="http://rogercortesi.com/eqn/tempimagedir/eqn2874.jpg"/>) that gives a minimum <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3518.png"/></li>
     </ol>
 </div>
 
