@@ -84,14 +84,14 @@ SAMPLE_SKIP --> This sets your sample window length and sampling rate. Sample Wi
 ```
 
 <div>
-    <b>YIN Algorithm</b>
-    <ol>
-        <li><b>Difference Function -</b> Squared difference of the (signal - signal lag(<img src="http://rogercortesi.com/eqn/tempimagedir/eqn7483.png"/></img>))</li>
-            <img src="http://rogercortesi.com/eqn/tempimagedir/eqn4513.png" />
-        <li><b>Cumulative Mean Normalized Difference Function -</b> Calculate the cumulative mean on the normalized difference signal</li>
-            <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3269.png" />
-        <li><b>Absolute Threshold -</b> Fix for subharmonic error with Autocorrelation, choose (<img src="http://rogercortesi.com/eqn/tempimagedir/eqn7483.png"/></img>) that gives a minimum <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3518.png"/></li>
-    </ol>
+<b>YIN Algorithm</b>
+<ol>
+<li><b>Difference Function -</b> Squared difference of the (signal - signal lag(<img src="http://rogercortesi.com/eqn/tempimagedir/eqn7483.png"/></img>))<br>
+<img src="http://latex.numberempire.com/render?%5Cinline%20d_%7Bt%7D%20%5Cbig%28%20%5Ctau%20%5Cbig%29%20%3D%20%5Csum_%7Bj%3D1%7D%5EW%20%20%5Cbig%28x_%7Bj%7D-x_%7Bj%2B%5Ctau%7D%5Cbig%29%5E%7B2%7D&sig=0c376ade6bf9ddc6c58fef19e394ac5f" /></li>
+
+<li><b>Cumulative Mean Normalized Difference Function -</b> Calculate the cumulative mean on the normalized difference signal<br><img src="http://latex.numberempire.com/render?%5Cinline%20d%27_%7Bt%7D%20%5Cbig%28%20%5Ctau%20%5Cbig%29%20%3D%5Cbegin%7Bcases%7D1%2C%20%26%20%5Ctau%20%3D%200%5C%5Cd_%7Bt%7D%20%5Cbig%28%20%5Ctau%20%5Cbig%29%5Cdiagup%20%26%5Cleft%5B%28%5Cfrac%7B1%7D%7B%5Ctau%7D%29%5Csum_%7Bj%3D1%7D%5E%5Ctau%20%20d_%7Bt%7D%20%28j%29%5Cright%5D%5Cend%7Bcases%7D&sig=3b3f85a5f10ea6ea256befa8e562d794" /></li>
+<li><b>Absolute Threshold -</b> Fix for subharmonic error with Autocorrelation, choose (<img src="http://rogercortesi.com/eqn/tempimagedir/eqn7483.png"/></img>) that gives a minimum <img src="http://rogercortesi.com/eqn/tempimagedir/eqn3518.png"/></li>
+</ol>
 </div>
 
 [YIN]:http://recherche.ircam.fr/equipes/pcm/cheveign/pss/2002_JASA_YIN.pdf
