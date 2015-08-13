@@ -41,7 +41,7 @@
                                                              \_/
 
 >Many optimizations have been done to the [YIN] algorithm for frequencies between 29-360Hz. 
->>While its still using a brute force method ( n<sup>2</sup> ) for finding the fundamental frequency f<sub>o</sub>, it is tuned to skip certain <b>tau</b> (<img src="http://latex.numberempire.com/render?%5Cinline%20%5Ctau__&sig=54bf27412fc70491a83bb73238395a62"/></img>) values and focus mostly on frequencies found in the bass and guitar. 
+>>While its still using a brute force method ( n<sup>2</sup> ) for finding the fundamental frequency f<sub>o</sub>, it is tuned to skip certain <b>tau</b> (<img src="http://latex.numberempire.com/render?%5Cinline%20%5Chuge%20%5Cmathbf%7B%5Ctau%7D&sig=845639da85c0dd8e2de679817b06639c"/></img>) values and focus mostly on frequencies found in the bass and guitar. 
 >>>The input is double buffered so while you are processing one buffer it is filling the other to double throughput. 
 >>>>There are a few parameters that can be adjusted to "dial in" the algorithm for better estimations. The defaults are what I found that have the best trade off for speed and accuracy.
 
@@ -87,9 +87,9 @@ SAMPLE_SKIP --> This sets your sample window length and sampling rate. Sample Wi
 <b>YIN Algorithm</b>
 <ol>
 <li><b>Difference Function -</b> Squared difference of the (signal - signal lag(<img src="http://latex.numberempire.com/render?%5Cinline%20%5Chuge%20%5Cmathbf%7B%5Ctau%7D&sig=845639da85c0dd8e2de679817b06639c"/></img>))<br>
-<img src="http://latex.numberempire.com/render?%5Cinline%20d_%7Bt%7D%20%5Cbig%28%20%5Ctau%20%5Cbig%29%20%3D%20%5Csum_%7Bj%3D1%7D%5EW%20%20%5Cbig%28x_%7Bj%7D-x_%7Bj%2B%5Ctau%7D%5Cbig%29%5E%7B2%7D&sig=0c376ade6bf9ddc6c58fef19e394ac5f" /></li>
+<img src="http://latex.numberempire.com/render?%5Cinline%20%5Chuge%20d_%7Bt%7D%20%5Cbig%28%20%5Ctau%20%5Cbig%29%20%3D%20%5Csum_%7Bj%3D1%7D%5EW%20%20%5Cbig%28x_%7Bj%7D-x_%7Bj%2B%5Ctau%7D%5Cbig%29%5E%7B2%7D&sig=62b1e20dadb167f5dcdb4c5206ab5633" /></li>
 
-<li><b>Cumulative Mean Normalized Difference Function -</b> Calculate the cumulative mean on the normalized difference signal<br><img src="http://latex.numberempire.com/render?%5Cinline%20d%27_%7Bt%7D%20%5Cbig%28%20%5Ctau%20%5Cbig%29%20%3D%5Cbegin%7Bcases%7D1%2C%20%26%20%5Ctau%20%3D%200%5C%5Cd_%7Bt%7D%20%5Cbig%28%20%5Ctau%20%5Cbig%29%5Cdiagup%20%26%5Cleft%5B%28%5Cfrac%7B1%7D%7B%5Ctau%7D%29%5Csum_%7Bj%3D1%7D%5E%5Ctau%20%20d_%7Bt%7D%20%28j%29%5Cright%5D%5Cend%7Bcases%7D&sig=3b3f85a5f10ea6ea256befa8e562d794" /></li>
+<li><b>Cumulative Mean Normalized Difference Function -</b> Calculate the cumulative mean on the normalized difference signal<br><img src="http://latex.numberempire.com/render?%5Cinline%20%5Chuge%20d%27_%7Bt%7D%20%5Cbig%28%20%5Ctau%20%5Cbig%29%20%3D%5Cbegin%7Bcases%7D1%2C%20%26%20%5Ctau%20%3D%200%5C%5Cd_%7Bt%7D%20%5Cbig%28%20%5Ctau%20%5Cbig%29%5Cdiagup%20%26%5Cleft%5B%28%5Cfrac%7B1%7D%7B%5Ctau%7D%29%5Csum_%7Bj%3D1%7D%5E%5Ctau%20%20d_%7Bt%7D%20%28j%29%5Cright%5D%5Cend%7Bcases%7D&sig=15a0b31a37bd5db3074f854711119bb3" /></li>
 <li><b>Absolute Threshold -</b> Fix for subharmonic error with Autocorrelation, choose (<img src="http://latex.numberempire.com/render?%5Cinline%20%5Chuge%20%5Cmathbf%7B%5Ctau%7D&sig=845639da85c0dd8e2de679817b06639c"/></img>) that gives a minimum <img src="http://latex.numberempire.com/render?%5Cinline%20%5Chuge%20%5Cmathbf%7B%5Ctau%7D&sig=845639da85c0dd8e2de679817b06639c"/></li>
 </ol>
 </div>
