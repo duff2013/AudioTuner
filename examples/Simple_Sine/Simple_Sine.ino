@@ -39,22 +39,23 @@ AudioConnection patchCord3(mixer, 0, dac, 0);
 char buffer[10];
 
 void setup() {
-  // put your setup code here, to run once:
-  AudioMemory(4);
-  sine.frequency(30.87);
-  sine.amplitude(1);
+    // put your setup code here, to run once:
+    AudioMemory(4);
+    tuner.set_threshold( .05f );
+    sine.frequency(30.87);
+    sine.amplitude(1);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  if (tuner.available()) {
-    float note = tuner.read();
-    float prob = tuner.probability();
-    Serial.printf("Note: %3.2f | Probility: %.2f\n", note, prob);
-  }
-  
-  if (Serial.available()) {
-    Serial.readBytesUntil('\n', buffer, 10);
-    handleCmds( buffer );
-  }
+    // put your main code here, to run repeatedly:
+    if (tuner.available()) {
+        float note = tuner.read();
+        float prob = tuner.probability();
+        Serial.printf("Note: %3.2f | Probility: %.2f\n", note, prob);
+    }
+    
+    if (Serial.available()) {
+        Serial.readBytesUntil('\n', buffer, 10);
+        handleCmds( buffer );
+    }
 }

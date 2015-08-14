@@ -56,18 +56,19 @@ void playNote(void) {
 }
 //---------------------------------------------------------------------------------------
 void setup() {
-  // put your setup code here, to run once:
-  AudioMemory(4);
-  pinMode(LED_BUILTIN, OUTPUT);
-  playNoteTimer.begin(playNote, 1000);
+    // put your setup code here, to run once:
+    AudioMemory(4);
+    tuner.set_threshold( .05f );
+    pinMode(LED_BUILTIN, OUTPUT);
+    playNoteTimer.begin(playNote, 1000);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  if (tuner.available()) {
-    float note = tuner.read();
-    float prob = tuner.probability();
-    Serial.printf("Note: %3.2f | Probility: %.2f\n", note, prob);
-  }
-
+    // put your main code here, to run repeatedly:
+    if (tuner.available()) {
+        float note = tuner.read();
+        float prob = tuner.probability();
+        Serial.printf("Note: %3.2f | Probility: %.2f\n", note, prob);
+    }
+    
 }
