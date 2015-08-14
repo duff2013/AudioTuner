@@ -70,17 +70,19 @@
 ```
 
 ```
-SAMPLE_RATE_DIVIDE_BY_x --> This sets 'SAMPLE_SKIP' to pass on every (x) data point from the 
-Audio Block being saved to the buffer, it determines the sample rate.
+SAMPLE_RATE_DIVIDE_BY_x --> This sets 'SAMPLE_SKIP' to pass on every (x) data point from 
+                            the Audio Block being saved to the buffer, it determines the 
+                            sample rate.
 ```
 
 ```
 NUM_SAMPLES --> This the size of each buffer, there two for double buffering.
 ```
+
 ```
-SAMPLE_SKIP --> This sets your sample window length and sampling rate. Sample Window Size is
-(NUM_SAMPLES * SAMPLE_SKIP) of the ~44100 samples every second. Sample Rate is 
-(AUDIO_SAMPLE_RATE_EXACT / SAMPLE_SKIP). 
+SAMPLE_SKIP --> This sets your sample window length and sampling rate. Sample Window Size
+                is (NUM_SAMPLES * SAMPLE_SKIP) of the ~44100 samples every second. Sample 
+                Rate is (AUDIO_SAMPLE_RATE_EXACT / SAMPLE_SKIP). 
 ```
 
 <div>

@@ -44,6 +44,7 @@ void AudioTuner::update( void ) {
     const int16_t *p, *end;
     block = receiveReadOnly( );
     if ( !block ) return;
+    
     if ( !enabled ) {
         release( block );
         return;
@@ -103,7 +104,9 @@ void AudioTuner::update( void ) {
             yin_buffer[yin_idx] = sum*tau;
             rs_buffer[yin_idx] = running_sum;
             yin_idx = ( ++yin_idx >= 5 ) ? 0 : yin_idx;
+            
             tau = estimate( yin_buffer, rs_buffer, yin_idx, tau );
+            
             if ( tau == 0 ) {
                 process_buffer = false;
                 new_output = true;
@@ -116,6 +119,7 @@ void AudioTuner::update( void ) {
                 //digitalWriteFast(0, LOW);
                 return;
             }
+            
         } while ( tau <= ( tau_global + 31 ) );
         tau_global = tau;
         //digitalWriteFast(0, LOW);
@@ -135,7 +139,7 @@ void AudioTuner::update( void ) {
 uint16_t AudioTuner::estimate( int64_t *yin, int64_t *rs, uint16_t head, uint16_t tau ) {
     const int64_t *p = ( int64_t * )yin;
     const int64_t *r = ( int64_t * )rs;
-    uint16_t period = 0, _tau, _head;
+    uint16_t _tau, _head;
     _tau = tau;
     _head = head;
     
@@ -153,7 +157,7 @@ uint16_t AudioTuner::estimate( int64_t *yin, int64_t *rs, uint16_t head, uint16_
         s2 = ( ( float )*( p+idx2 ) / r[idx2] );
         
         if ( s1 < threshold && s1 < s2 ) {
-            period = _tau - 3;
+            uint16_t period = _tau - 3;
             periodicity = 1 - s1;
             data = period + 0.5f * ( s0 - s2 ) / ( s0 - 2.0f * s1 + s2 );
             return 0;
@@ -186,6 +190,7 @@ bool AudioTuner::available( void ) {
 float AudioTuner::read( void ) {
     return SAMPLE_RATE / data;
 }
+
 /**
  *  Periodicity of the sampled signal from Yin algorithm from read function.
  *
@@ -194,18 +199,22 @@ float AudioTuner::read( void ) {
 float AudioTuner::probability( void ) {
     return periodicity;
 }
+
 /**
  *  Initialise parameters.
  *
  *  @param thresh    Allowed uncertainty
  */
-void AudioTuner::set_params( float thresh ) {
+void AudioTuner::set_threshold( float thresh ) {
     __disable_irq( );
-    //arm_cfft_radix4_init_q15(&fft_inst, 1024, 0, 1);
-    //arm_cfft_radix4_init_q15(&ifft_inst, 1024, 1, 1);
     threshold = thresh;
-    periodicity = 0.0f;
-    block_count = 0;
-    enabled = true;
-    __enable_irq( );
+    process_buffer = false;
+    periodicity    = 0.0f;
+    next_buffer    = 1;
+    running_sum    = 0;
+    block_count    = 0;
+    block_count    = 0;
+    yin_idx        = 1;
+    data           = 0;
+     __enable_irq( );
 }

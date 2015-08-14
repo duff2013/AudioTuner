@@ -47,22 +47,19 @@
 class AudioTuner : public AudioStream
 {
 public:
-    AudioTuner( void ) : AudioStream( 1, inputQueueArray ),
-                                     enabled( false ), new_output(false),
-                                     next_buffer(1), process_buffer(false),
-                                     running_sum(0), block_count(0),
-                                     yin_idx(1)
-    {
-        
-        set_params( 0.05f );// threshold set 15ms
-    }
+    /**
+     *  constructor to setup Audio Library and initialize
+     *
+     *  @return none
+     */
+    AudioTuner( void ) : AudioStream( 1, inputQueueArray ), enabled( false ), new_output(false){ }
     
     /**
-     *  sets threshold value and window length
+     *  sets threshold value
      *
      *  @param thresh
      */
-    void set_params( float thresh );
+    void set_threshold( float thresh );
     
     /**
      *  triggers true when valid frequency is found
@@ -83,10 +80,12 @@ public:
      *  @return probability of correct freq found
      */
     float probability( void );
+    
     /**
      *  Audio Library calls this update function ~2.9ms
      */
     virtual void update( void );
+    
 private:
     /**
      *  check the sampled data for fundmental frequency
