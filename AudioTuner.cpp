@@ -79,7 +79,7 @@ void AudioTuner::update( void ) {
     block_count = count;
     
     if ( process_buffer ) {
-        //digitalWriteFast(0, HIGH);
+        digitalWriteFast(0, HIGH);
         uint16_t tau;
         uint16_t  next;
         next = next_buffer;
@@ -214,6 +214,7 @@ void AudioTuner::set_threshold( float thresh ) {
     running_sum    = 0;
     block_count    = 0;
     block_count    = 0;
+    enabled        = true;
     yin_idx        = 1;
     data           = 0;
      __enable_irq( );
