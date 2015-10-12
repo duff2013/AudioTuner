@@ -19,6 +19,7 @@
  the teensy can store in flash these notes are truncated to ~120,000B or about 1/2 of the whole
  signal.
  */
+#include <SerialFlash.h>
 #include <AudioTuner.h>
 #include <Audio.h>
 #include <Wire.h>
@@ -56,19 +57,22 @@ void playNote(void) {
 }
 //---------------------------------------------------------------------------------------
 void setup() {
-    // put your setup code here, to run once:
     AudioMemory(4);
-    tuner.set_threshold( .05f );
+    /*
+     *  Intialize the yin algorithm's threshold
+     *  and percent of current cpu usage used
+     *  before slowing the algorithm down.
+     */
+    tuner.initialize(.15f, 90);
     pinMode(LED_BUILTIN, OUTPUT);
     playNoteTimer.begin(playNote, 1000);
 }
 
 void loop() {
-    // put your main code here, to run repeatedly:
+    // read back fundmental frequency
     if (tuner.available()) {
         float note = tuner.read();
         float prob = tuner.probability();
         Serial.printf("Note: %3.2f | Probility: %.2f\n", note, prob);
     }
-    
 }

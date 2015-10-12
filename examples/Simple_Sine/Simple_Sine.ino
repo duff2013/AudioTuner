@@ -20,6 +20,7 @@
  You can change the amplitude by typing "a " + amplitude in the serial monitor. (0,1)
  EX. "a .5"
  */
+#include <SerialFlash.h>
 #include <AudioTuner.h>
 #include <Audio.h>
 #include <Wire.h>
@@ -39,15 +40,19 @@ AudioConnection patchCord3(mixer, 0, dac, 0);
 char buffer[10];
 
 void setup() {
-    // put your setup code here, to run once:
     AudioMemory(4);
-    tuner.set_threshold( .05f );
+    /*
+     *  Intialize the yin algorithm's threshold
+     *  and percent of current cpu usage used
+     *  before slowing the algorithm down.
+     */
+    tuner.initialize(.15f, 90);
     sine.frequency(30.87);
     sine.amplitude(1);
 }
 
 void loop() {
-    // put your main code here, to run repeatedly:
+    // read back fundmental frequency
     if (tuner.available()) {
         float note = tuner.read();
         float prob = tuner.probability();

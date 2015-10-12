@@ -1,6 +1,6 @@
 <p align="center">
     <b>Guitar and Bass Tuner Library</b><br>
-    <b>Teensy 3.1 v2.0</b><br>
+    <b>Teensy 3.1/2 v2.1</b><br>
 </p>
 
 >Software algorithm ([YIN]) for guitar and bass tuning using a Teensy Audio Library. This audio object's algorithm can be some what memory and processor hungry but will allow you to detect with fairly good accuracy the fundamental frequencies f<sub>o</sub> from electric guitars and basses. 
@@ -43,46 +43,44 @@
 >Many optimizations have been done to the [YIN] algorithm for frequencies between 29-360Hz. 
 >>While its still using a brute force method ( n<sup>2</sup> ) for finding the fundamental frequency f<sub>o</sub>, it is tuned to skip certain <b>tau</b> (<img src="http://latex.numberempire.com/render?%5Cinline%20%5Chuge%20%5Cmathbf%7B%5Ctau%7D&sig=845639da85c0dd8e2de679817b06639c"/></img>) values and focus mostly on frequencies found in the bass and guitar. 
 >>>The input is double buffered so while you are processing one buffer it is filling the other to double throughput. 
->>>>There are a few parameters that can be adjusted to "dial in" the algorithm for better estimations. The defaults are what I found that have the best trade off for speed and accuracy.
+>>>>There are a few parameters that can be adjusted to "dial in" the algorithm for better estimations located in AudioTuner.h. The defaults below are what I found that have the best trade off for speed and accuracy.
 
 <h4>AudioTuner.h</h4>
 
 ```
 /****************************************************************/
-#define SAMPLE_RATE_DIVIDE_BY_1 1      // 44100    sample rate
-#define SAMPLE_RATE_DIVIDE_BY_2 2      // 22050    sample rate
-#define SAMPLE_RATE_DIVIDE_BY_4 4      // 11025    sample rate
-#define SAMPLE_RATE_DIVIDE_BY_8 8      // 5512.5   sample rate
-#define SAMPLE_RATE_DIVIDE_BY_16 16    // 2756.25  sample rate
-#define SAMPLE_RATE_DIVIDE_BY_32 32    // 1378.125 sample rate
+#define SAMPLE_RATE_44100  1      // 44100    sample rate
+#define SAMPLE_RATE_22050  2      // 22050    sample rate
+#define SAMPLE_RATE_11025  4      // 11025    sample rate
+/****************************************************************/
+
 /****************************************************************
 *              Safe to adjust these values below               *
+*                                                              *
+*  These two parameters define how this object works.          *
+*                                                              *
+*  1.  NUM_SAMPLES - Size of the buffer. Since object uses     *
+*      double buffering this value will be 4x in bytes of      *
+*      memory.  !!! Must be power of 2 !!!!                    *
+*                                                              *
+*  2.  SAMPLE_RATE - Just what it says.                        *
+*                                                              *
+*  These two parameters work hand in hand. For example if you  *
+*  want a high sample rate but do not allocate enough buffer   *
+*  space, you will be limit how low of a frequency you can     *
+*  measure. If you then increase the buffer you use up         *
+*  precious ram and slow down the system since it takes longer *
+*  to processes the buffer.                                    *
+*                                                              *
+*  Play around with these values to find what best suits your  *
+*  needs. The max number of buffers you can have is 8192 bins. *
 ****************************************************************/
-// Adjust number of samples to collect in buffer here, also effects
-// convergence speed and resolution.
+// !!! Must be power of 2 !!!!
 #define NUM_SAMPLES 2048 // make a power of two
 
-// larger the divide-by, less resolution and lower the frequency for
-// a given number of samples that can be detected. Also effects
-// convergence speed.
-#define SAMPLE_SKIP SAMPLE_RATE_DIVIDE_BY_2
+// Use defined sample rates above^
+#define SAMPLE_RATE SAMPLE_RATE_22050
 /****************************************************************/
-```
-
-```
-SAMPLE_RATE_DIVIDE_BY_x --> This sets 'SAMPLE_SKIP' to pass on every (x) data point from 
-                            the Audio Block being saved to the buffer, it determines the 
-                            sample rate.
-```
-
-```
-NUM_SAMPLES --> This the size of each buffer, there two for double buffering.
-```
-
-```
-SAMPLE_SKIP --> This sets your sample window length and sampling rate. Sample Window Size
-                is (NUM_SAMPLES * SAMPLE_SKIP) of the ~44100 samples every second. Sample 
-                Rate is (AUDIO_SAMPLE_RATE_EXACT / SAMPLE_SKIP). 
 ```
 
 <div>

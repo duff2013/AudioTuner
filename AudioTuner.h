@@ -25,23 +25,37 @@
 
 #include "AudioStream.h"
 /****************************************************************/
-#define SAMPLE_RATE_DIVIDE_BY_1 1      // 44100    sample rate
-#define SAMPLE_RATE_DIVIDE_BY_2 2      // 22050    sample rate
-#define SAMPLE_RATE_DIVIDE_BY_4 4      // 11025    sample rate
-#define SAMPLE_RATE_DIVIDE_BY_8 8      // 5512.5   sample rate
-#define SAMPLE_RATE_DIVIDE_BY_16 16    // 2756.25  sample rate
-#define SAMPLE_RATE_DIVIDE_BY_32 32    // 1378.125 sample rate
+#define SAMPLE_RATE_44100  1      // 44100    sample rate
+#define SAMPLE_RATE_22050  2      // 22050    sample rate
+#define SAMPLE_RATE_11025  4      // 11025    sample rate
+/****************************************************************/
+
 /****************************************************************
  *              Safe to adjust these values below               *
+ *                                                              *
+ *  These two parameters define how this object works.          *
+ *                                                              *
+ *  1.  NUM_SAMPLES - Size of the buffer. Since object uses     *
+ *      double buffering this value will be 4x in bytes of      *
+ *      memory.  !!! Must be power of 2 !!!!                    *
+ *                                                              *
+ *  2.  SAMPLE_RATE - Just what it says.                        *
+ *                                                              *
+ *  These two parameters work hand in hand. For example if you  *
+ *  want a high sample rate but do not allocate enough buffer   *
+ *  space, you will be limit how low of a frequency you can     *
+ *  measure. If you then increase the buffer you use up         *
+ *  precious ram and slow down the system since it takes longer *
+ *  to processes the buffer.                                    *
+ *                                                              *
+ *  Play around with these values to find what best suits your  *
+ *  needs. The max number of buffers you can have is 8192 bins. *
  ****************************************************************/
-// Adjust number of samples to collect in buffer here, also effects
-// convergence speed and resolution.
+// !!! Must be power of 2 !!!!
 #define NUM_SAMPLES 2048 // make a power of two
 
-// larger the divide-by, less resolution and lower the frequency for
-// a given number of samples that can be detected. Also effects
-// convergence speed.
-#define SAMPLE_SKIP SAMPLE_RATE_DIVIDE_BY_2
+// Use defined sample rates above^
+#define SAMPLE_RATE SAMPLE_RATE_22050
 /****************************************************************/
 
 class AudioTuner : public AudioStream
@@ -52,14 +66,23 @@ public:
      *
      *  @return none
      */
-    AudioTuner( void ) : AudioStream( 1, inputQueueArray ), enabled( false ), new_output(false){ }
+    AudioTuner( void ) : AudioStream( 1, inputQueueArray ), enabled( false ), new_output(false) {
+        digitalWriteFast(2, LOW);
+    }
+    /**
+     *  initialize variables and start conversion
+     *
+     *  @param threshold Allowed uncertainty
+     *  @param cpu_max   How much cpu usage before throttling
+     */
+    void initialize( float threshold, uint8_t cpu_max);
     
     /**
      *  sets threshold value
      *
      *  @param thresh
      */
-    void set_threshold( float thresh );
+    void threshold( float p );
     
     /**
      *  triggers true when valid frequency is found
@@ -77,7 +100,7 @@ public:
     /**
      *  get predicitity
      *
-     *  @return probability of correct freq found
+     *  @return probability of frequency found
      */
     float probability( void );
     
@@ -88,7 +111,7 @@ public:
     
 private:
     /**
-     *  check the sampled data for fundmental frequency
+     *  check the sampled data for fundamental frequency
      *
      *  @param yin  buffer to hold sum*tau value
      *  @param rs   buffer to hold running sum for sampled window
@@ -100,10 +123,10 @@ private:
     uint16_t estimate( int64_t *yin, int64_t *rs, uint16_t head, uint16_t tau );
     
     int16_t  buffer[NUM_SAMPLES*2] __attribute__ ( ( aligned ( 4 ) ) );
-    float    periodicity, threshold, data;
+    float    periodicity, yin_threshold, data;
     int64_t  rs_buffer[5], yin_buffer[5];
     uint64_t running_sum;
-    uint16_t block_count, tau_global;
+    uint16_t tau_global, count_global, tau_cycles, cpu_usage_max;
     uint8_t  next_buffer, yin_idx;
     bool     enabled, process_buffer;
     volatile bool new_output;
