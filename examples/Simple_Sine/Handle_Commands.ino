@@ -7,9 +7,9 @@ void handleCmds( String cmd ) {
         float t = p.toFloat();
         Serial.print("new frequency: ");
         Serial.println(t);
-        //AudioNoInterrupts();  // disable audio library momentarily
+        AudioNoInterrupts();  // disable audio library momentarily
         sine.frequency(p.toFloat());
-        //AudioInterrupts();    // enable, both tones will start together
+        AudioInterrupts();    // enable, both tones will start together
     }
     else if (p.startsWith("a ")) {
         p.trim();

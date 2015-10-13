@@ -58,8 +58,48 @@ void AudioTuner::update( void ) {
     end = p + AUDIO_BLOCK_SAMPLES;
     
     /*
-     * Set the number of cycles to processed per receiving block.
-     *
+     * Double buffering, one fills while the other is processed
+     * 2x the throughput.
+    */
+    uint16_t *dst;
+    bool next = next_buffer;
+    if ( next ) {
+        //digitalWriteFast(6, HIGH);
+        dst = ( uint16_t * )buffer;
+    }
+    else {
+       //digitalWriteFast(6, LOW);
+       dst = ( uint16_t * )buffer + NUM_SAMPLES;
+    }
+    
+    // gather data/and release block
+    uint16_t count = count_global;
+    do {
+        *( dst+count++ ) = *( uint16_t * )p;
+        p += SAMPLE_RATE;
+    } while ( p < end );
+    release( block );
+    
+    /* 
+     * If buffer full switch to start filling next
+     * buffer and process the just filled buffer.
+     */
+    if ( count >= NUM_SAMPLES ) {
+        //digitalWriteFast(2, !digitalReadFast(2));
+        __disable_irq();
+        next_buffer = !next_buffer;
+        process_buffer  = true;
+        count_global    = 0;
+        tau_global      = 1;
+        yin_idx         = 1;
+        running_sum     = 0;
+        count           = 0;
+        __enable_irq();
+    }
+    count_global = count;// update global count
+    
+    /*
+     * Set the number of cycles to be processed per receiving block.
      */
     uint16_t cycles;
     const uint16_t usage_max = cpu_usage_max;
@@ -71,7 +111,7 @@ void AudioTuner::update( void ) {
 #elif NUM_SAMPLES == 2048
         cycles = tau_global + 8;
 #elif NUM_SAMPLES <= 1024
-        cycles = tau_global + 16;
+        cycles = tau_global + 32;
 #endif
     }
     else {
@@ -86,51 +126,25 @@ void AudioTuner::update( void ) {
 #endif
     }
     
-    uint16_t count = count_global;
-    
-    /*
-     * Double buffering, one fill while the other is processed
-     * 2x the throughput.
-    */
-    uint16_t *dst;
-    if ( next_buffer ) dst = ( uint16_t * )buffer;
-    else dst = ( uint16_t * )buffer + NUM_SAMPLES;
-    
-    // gather data
-    do {
-        *( dst+count++ ) = *( uint16_t * )p;
-        p += SAMPLE_RATE;
-    } while ( p < end );
-    release( block );
-    
-    /* 
-     * If buffer full switch to start filling next
-     * buffer and process the just filled buffer.
-     */
-    if ( count >= NUM_SAMPLES ) {
-        //digitalWriteFast(2, !digitalReadFast(2));
-        next_buffer = !next_buffer;
-        process_buffer  = true;
-        count_global    = 0;
-        tau_global      = 1;
-        yin_idx         = 1;
-        running_sum     = 0;
-        count           = 0;
-    }
-    count_global = count;// update global count
-    
     if ( process_buffer ) {
         //digitalWriteFast(0, HIGH);
         uint16_t tau;
-        uint16_t  next;
         next = next_buffer;
         tau = tau_global;
         do {
             int64_t sum  = 0;
             const int16_t *end, *buf;
-            if ( next ) buf = buffer + NUM_SAMPLES;
-            else buf = buffer;
+            if ( next ) {
+                //digitalWriteFast(4, LOW);
+                buf = buffer + NUM_SAMPLES;
+            }
+            else {
+                //digitalWriteFast(4, HIGH);
+                buf = buffer;
+            }
             end = buf + HALF_BUFFER;
+            
+            // TODO: How to make faster?
             do {
                 int16_t current, lag, delta;
                 UNROLL( 8,
@@ -195,9 +209,9 @@ uint16_t AudioTuner::estimate( int64_t *yin, int64_t *rs, uint16_t head, uint16_
         idx2 = ( idx2 >= 5 ) ? 0 : idx2;
         
         float s0, s1, s2;
-        s0 = ( ( float )*( p+idx0 ) / r[idx0] );
-        s1 = ( ( float )*( p+idx1 ) / r[idx1] );
-        s2 = ( ( float )*( p+idx2 ) / r[idx2] );
+        s0 = ( ( float )*( p+idx0 ) / *( r+idx0 ) );
+        s1 = ( ( float )*( p+idx1 ) / *( r+idx1 ) );
+        s2 = ( ( float )*( p+idx2 ) / *( r+idx2 ) );
         
         if ( s1 < yin_threshold && s1 < s2 ) {
             uint16_t period = _tau - 3;
@@ -206,8 +220,8 @@ uint16_t AudioTuner::estimate( int64_t *yin, int64_t *rs, uint16_t head, uint16_
             return 0;
         }
         
-        if ( s1 > 2.4 ) return _tau + 2;
-        else return _tau + 1;
+        //if ( s1 > 2.4 ) return _tau + 2;
+        //else return _tau + 1;
     }
     return _tau + 1;
 }
@@ -218,13 +232,13 @@ uint16_t AudioTuner::estimate( int64_t *yin, int64_t *rs, uint16_t head, uint16_
  *  @param threshold Allowed uncertainty
  *  @param cpu_max   How much cpu usage before throttling
  */
-void AudioTuner::initialize( float threshold, uint8_t cpu_max ) {
+void AudioTuner::initialize( float threshold, float cpu_max ) {
     __disable_irq( );
-    cpu_usage_max = cpu_max;
+    cpu_usage_max = cpu_max*100;
     yin_threshold = threshold;
     process_buffer = false;
     periodicity    = 0.0f;
-    next_buffer    = 1;
+    next_buffer    = true;
     running_sum    = 0;
     count_global   = 0;
     yin_idx        = 1;
@@ -255,8 +269,7 @@ float AudioTuner::read( void ) {
     __disable_irq( );
     float d = data;
     __enable_irq( );
-    d = SAMPLE_RATE_EXACT / d;
-    return d;
+    return SAMPLE_RATE_EXACT / d;
 }
 
 /**

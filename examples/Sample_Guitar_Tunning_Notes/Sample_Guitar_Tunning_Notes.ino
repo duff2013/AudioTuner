@@ -15,7 +15,7 @@
  Bass strings are (5th string) B0=30.87Hz, (4th string) E1=41.20Hz, A1=55Hz, D2=73.42Hz, G2=98Hz
  
  This example tests the yin algorithm with actual notes from nylon string guitar recorded
- as wav format at 16B @ 44100smpls/sec. Since the decay of the notes will be longer than what
+ as wav format at 16B @ 44100 samples/sec. Since the decay of the notes will be longer than what
  the teensy can store in flash these notes are truncated to ~120,000B or about 1/2 of the whole
  signal.
  */
@@ -59,20 +59,23 @@ void playNote(void) {
 void setup() {
     AudioMemory(4);
     /*
-     *  Intialize the yin algorithm's threshold
-     *  and percent of current cpu usage used
-     *  before slowing the algorithm down.
+     *  Initialize the yin algorithm's absolute
+     *  threshold, this is good number.
+     *
+     *  Percent of overall current cpu usage used
+     *  before making the search algorithm less
+     *  aggressive (0.0 - 1.0).
      */
-    tuner.initialize(.15f, 90);
+    tuner.initialize(.15, .99);
     pinMode(LED_BUILTIN, OUTPUT);
     playNoteTimer.begin(playNote, 1000);
 }
 
 void loop() {
-    // read back fundmental frequency
+    // read back fundamental frequency
     if (tuner.available()) {
         float note = tuner.read();
         float prob = tuner.probability();
-        Serial.printf("Note: %3.2f | Probility: %.2f\n", note, prob);
+        Serial.printf("Note: %3.2f | Probability: %.2f\n", note, prob);
     }
 }

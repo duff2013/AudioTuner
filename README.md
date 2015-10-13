@@ -1,6 +1,6 @@
 <p align="center">
-    <b>Guitar and Bass Tuner Library</b><br>
-    <b>Teensy 3.1/2 v2.1</b><br>
+    <b>Guitar and Bass Tuner Library v2.2</b><br>
+    <b>Teensy 3.1/2</b><br>
 </p>
 
 >Software algorithm ([YIN]) for guitar and bass tuning using a Teensy Audio Library. This audio object's algorithm can be some what memory and processor hungry but will allow you to detect with fairly good accuracy the fundamental frequencies f<sub>o</sub> from electric guitars and basses. 

@@ -42,21 +42,25 @@ char buffer[10];
 void setup() {
     AudioMemory(4);
     /*
-     *  Intialize the yin algorithm's threshold
-     *  and percent of current cpu usage used
-     *  before slowing the algorithm down.
+     *  Initialize the yin algorithm's absolute
+     *  threshold, this is good number.
+     *
+     *  Percent of overall current cpu usage used 
+     *  before making the search algorithm less
+     *  aggressive (0.0 - 1.0).
      */
-    tuner.initialize(.15f, 90);
+    tuner.initialize(.15, .99);
+    
     sine.frequency(30.87);
     sine.amplitude(1);
 }
 
 void loop() {
-    // read back fundmental frequency
+    // read back fundamental frequency
     if (tuner.available()) {
         float note = tuner.read();
         float prob = tuner.probability();
-        Serial.printf("Note: %3.2f | Probility: %.2f\n", note, prob);
+        Serial.printf("Note: %3.2f | Probability: %.2f\n", note, prob);
     }
     
     if (Serial.available()) {

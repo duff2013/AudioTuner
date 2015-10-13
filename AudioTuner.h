@@ -66,16 +66,15 @@ public:
      *
      *  @return none
      */
-    AudioTuner( void ) : AudioStream( 1, inputQueueArray ), enabled( false ), new_output(false) {
-        digitalWriteFast(2, LOW);
-    }
+    AudioTuner( void ) : AudioStream( 1, inputQueueArray ), enabled( false ), new_output(false) {}
+    
     /**
      *  initialize variables and start conversion
      *
      *  @param threshold Allowed uncertainty
      *  @param cpu_max   How much cpu usage before throttling
      */
-    void initialize( float threshold, uint8_t cpu_max);
+    void initialize( float threshold, float cpu_max);
     
     /**
      *  sets threshold value
@@ -123,12 +122,12 @@ private:
     uint16_t estimate( int64_t *yin, int64_t *rs, uint16_t head, uint16_t tau );
     
     int16_t  buffer[NUM_SAMPLES*2] __attribute__ ( ( aligned ( 4 ) ) );
-    float    periodicity, yin_threshold, data;
+    float    periodicity, yin_threshold, data, cpu_usage_max;
     int64_t  rs_buffer[5], yin_buffer[5];
     uint64_t running_sum;
-    uint16_t tau_global, count_global, tau_cycles, cpu_usage_max;
-    uint8_t  next_buffer, yin_idx;
-    bool     enabled, process_buffer;
+    uint16_t tau_global, count_global, tau_cycles;
+    uint8_t  yin_idx;
+    bool     enabled, process_buffer, next_buffer;
     volatile bool new_output;
     audio_block_t *inputQueueArray[1];
 };
