@@ -12,7 +12,7 @@ AudioTuner	KEYWORD1
 AudioTuner	KEYWORD2
 available	KEYWORD2
 probability	KEYWORD2
-set_threshold	KEYWORD2
+initialize	KEYWORD2
 read	KEYWORD2
 #######################################
 # Instances (KEYWORD2)
