@@ -44,7 +44,7 @@
 >>While its still using a brute force method ( n<sup>2</sup> ) for finding the fundamental frequency f<sub>o</sub>, it is tuned to skip certain <b>tau</b> (<img src="http://latex.numberempire.com/render?%5Cinline%20%5Chuge%20%5Cmathbf%7B%5Ctau%7D&sig=845639da85c0dd8e2de679817b06639c"/></img>) values and focus mostly on frequencies found in the bass and guitar. 
 >>>The input is double buffered so while you are processing one buffer it is filling the other to double throughput. 
 >>>>The parameter AUDIO_BLOCKS below can be adjusted but its default of 24 I found to be best to work with the guitar and bass frequency range (29- 400)Hz. 
->>>>Looking into finding the Auto Correlation using FFT and IFFT to speed up processing of data! Not that simple because the YIN algorithm uses a squared difference tweak to the Auto Correlation.
+>>>>>Looking into finding the Auto Correlation using FFT and IFFT to speed up processing of data! Not that simple because the YIN algorithm uses a squared difference tweak to the Auto Correlation.
 
 <h4>AudioTuner.h</h4>
 
