@@ -7,7 +7,7 @@
 >>You can install this as a normal Arduino Library and will work with the Audio Library, no need to edit the Audio libraries source now.
 
 <!-- language: lang-none -->
-      Hookup Guide - 1.2v DC Bias and High Pass Filter - No Amplification
+      Hookup Guide - ~.6v DC Bias and High Pass Filter - No Amplification
 
                        *--------------------------------------------------*   
                        |                                                  |
