@@ -40,16 +40,12 @@ AudioConnection patchCord3(mixer, 0, dac, 0);
 char buffer[10];
 
 void setup() {
-    AudioMemory(4);
+    AudioMemory(30);
     /*
      *  Initialize the yin algorithm's absolute
      *  threshold, this is good number.
-     *
-     *  Percent of overall current cpu usage used 
-     *  before making the search algorithm less
-     *  aggressive (0.0 - 1.0).
      */
-    tuner.initialize(.15, .99);
+    tuner.initialize(.15);
     
     sine.frequency(30.87);
     sine.amplitude(1);

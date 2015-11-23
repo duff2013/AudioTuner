@@ -22,164 +22,136 @@
 
 #include "AudioTuner.h"
 #include "utility/dspinst.h"
+#include "arm_math.h"
 
-#if SAMPLE_RATE == SAMPLE_RATE_44100
-    #define SAMPLE_RATE_EXACT AUDIO_SAMPLE_RATE_EXACT / 1
-#elif SAMPLE_RATE == SAMPLE_RATE_22050
-    #define SAMPLE_RATE_EXACT AUDIO_SAMPLE_RATE_EXACT / 2
-#elif SAMPLE_RATE == SAMPLE_RATE_11025
-    #define SAMPLE_RATE_EXACT AUDIO_SAMPLE_RATE_EXACT / 4
-#endif
-
-#define HALF_BUFFER NUM_SAMPLES / 2
+#define HALF_BLOCKS AUDIO_BLOCKS * 64
 
 #define LOOP1(a)  a
 #define LOOP2(a)  a LOOP1(a)
 #define LOOP3(a)  a LOOP2(a)
+#define LOOP4(a)  a LOOP3(a)
 #define LOOP8(a)  a LOOP3(a) a LOOP3(a)
+#define LOOP16(a) a LOOP8(a) a LOOP2(a) a LOOP3(a)
+#define LOOP32(a)  a LOOP16(a) a LOOP8(a) a LOOP1(a) a LOOP3(a)
+#define LOOP64(a)  a LOOP32(a) a LOOP16(a) a LOOP8(a) a LOOP2(a) a LOOP1(a)
 #define UNROLL(n,a) LOOP##n(a)
 
-/**
- *  Audio update function.
- */
+static void copy_buffer(void *destination, const void *source) {
+    const uint16_t *src = (const uint16_t *)source;
+    uint16_t *dst = (uint16_t *)destination;
+    for (int i=0; i < AUDIO_BLOCK_SAMPLES; i++) *dst++ = *src++;
+}
+
 void AudioTuner::update( void ) {
-    audio_block_t *block;
-    const int16_t *p, *end;
-    block = receiveReadOnly( );
     
-    if ( !block ) return;
+    audio_block_t *block;
+    
+    block = receiveReadOnly();
+    if (!block) return;
     
     if ( !enabled ) {
         release( block );
         return;
     }
     
-    p = block->data;
-    end = p + AUDIO_BLOCK_SAMPLES;
-    
-    /*
-     * Double buffering, one fills while the other is processed
-     * 2x the throughput.
-    */
-    uint16_t *dst;
-    bool next = next_buffer;
-    if ( next ) {
-        //digitalWriteFast(6, HIGH);
-        dst = ( uint16_t * )buffer;
-    }
-    else {
-       //digitalWriteFast(6, LOW);
-       dst = ( uint16_t * )buffer + NUM_SAMPLES;
+    digitalWriteFast(2, HIGH);
+    if ( next_buffer ) {
+        blocklist1[state++] = block;
+        if ( !first_run && process_buffer ) process( );
+    } else {
+        blocklist2[state++] = block;
+        if ( !first_run && process_buffer ) process( );
     }
     
-    // gather data/and release block
-    uint16_t count = count_global;
+    if ( state >= AUDIO_BLOCKS ) {
+        if ( next_buffer ) {
+            if ( !first_run && process_buffer ) process( );
+            for ( int i = 0; i < AUDIO_BLOCKS; i++ ) copy_buffer( AudioBuffer+( i * 0x80 ), blocklist1[i]->data );
+            for ( int i = 0; i < AUDIO_BLOCKS; i++ ) release(blocklist1[i] );
+        } else {
+            if ( !first_run && process_buffer ) process( );
+            for ( int i = 0; i < AUDIO_BLOCKS; i++ ) copy_buffer( AudioBuffer+( i * 0x80 ), blocklist2[i]->data );
+            for ( int i = 0; i < AUDIO_BLOCKS; i++ ) release( blocklist2[i] );
+        }
+        process_buffer = true;
+        first_run = false;
+        state = 0;
+        //digitalWriteFast(LED_BUILTIN, !digitalReadFast(LED_BUILTIN));
+    }
+}
+
+FASTRUN void AudioTuner::process( void ) {
+    //digitalWriteFast(0, HIGH);
+    
+    const int16_t *p;
+    p = AudioBuffer;
+    
+    uint16_t cycles = 64;;
+    uint16_t tau = tau_global;
     do {
-        *( dst+count++ ) = *( uint16_t * )p;
-        p += SAMPLE_RATE;
-    } while ( p < end );
-    release( block );
+        uint16_t x   = 0;
+        int64_t  sum = 0;
+        //uint32_t res;
+        do {
+            /*int16_t current1, lag1, current2, lag2;
+             int32_t val1, val2;
+             lag1 = *( ( uint32_t * )p + ( x + tau ) );
+             current1 = *( ( uint32_t * )p + x );
+             x += 32;
+             lag2 = *( ( uint32_t * )p + ( x + tau ) );
+             current2 = *( ( uint32_t * )p + x );
+             val1 = __PKHBT(current1, current2, 0x10);
+             val2 = __PKHBT(lag1, lag2, 0x10);
+             res = __SSUB16( val1, val2 );
+             sum = __SMLALD(res, res, sum);
+             //sum = __SMLSLD(delta1, delta2, sum);*/
+            int16_t current, lag, delta;
+            //UNROLL(16,
+                   lag = *( ( int16_t * )p + ( x+tau ) );
+                   current = *( ( int16_t * )p+x );
+                   delta = ( current-lag );
+                   sum += delta * delta;
+#if F_CPU == 144000000
+                   x += 8;
+#elif F_CPU == 120000000
+                   x += 12;
+#elif F_CPU == 96000000
+                   x += 16;
+#elif F_CPU < 96000000
+                   x += 32;
+#endif
+                   //);
+        } while ( x <= HALF_BLOCKS );
+
+        running_sum += sum;
+        yin_buffer[yin_idx] = sum*tau;
+        rs_buffer[yin_idx] = running_sum;
+        yin_idx = ( ++yin_idx >= 5 ) ? 0 : yin_idx;
+        tau = estimate( yin_buffer, rs_buffer, yin_idx, tau );
+
+        if ( tau == 0 ) {
+            process_buffer  = false;
+            new_output      = true;
+            yin_idx         = 1;
+            running_sum     = 0;
+            tau_global      = 1;
+            //digitalWriteFast(2, LOW);
+            //digitalWriteFast(0, LOW);
+            return;
+        }
+    } while ( --cycles );
     
-    /* 
-     * If buffer full switch to start filling next
-     * buffer and process the just filled buffer.
-     */
-    if ( count >= NUM_SAMPLES ) {
-        //digitalWriteFast(2, !digitalReadFast(2));
-        __disable_irq();
-        next_buffer = !next_buffer;
-        process_buffer  = true;
-        count_global    = 0;
-        tau_global      = 1;
+    if ( tau >= HALF_BLOCKS ) {
+        process_buffer  = false;
+        new_output      = false;
         yin_idx         = 1;
         running_sum     = 0;
-        count           = 0;
-        __enable_irq();
-    }
-    count_global = count;// update global count
-    
-    /*
-     * Set the number of cycles to be processed per receiving block.
-     */
-    uint16_t cycles;
-    const uint16_t usage_max = cpu_usage_max;
-    if ( AudioProcessorUsage( ) > usage_max ) {
-#if NUM_SAMPLES >= 8192
-        cycles = tau_global + 2;
-#elif NUM_SAMPLES == 4096
-        cycles = tau_global + 4;
-#elif NUM_SAMPLES == 2048
-        cycles = tau_global + 8;
-#elif NUM_SAMPLES <= 1024
-        cycles = tau_global + 32;
-#endif
-    }
-    else {
-#if NUM_SAMPLES >= 8192
-        cycles = tau_global + 8;
-#elif NUM_SAMPLES == 4096
-        cycles = tau_global + 16;
-#elif NUM_SAMPLES == 2048
-        cycles = tau_global + 32;
-#elif NUM_SAMPLES <= 1024
-        cycles = tau_global + 64;
-#endif
-    }
-    
-    if ( process_buffer ) {
-        //digitalWriteFast(0, HIGH);
-        uint16_t tau;
-        next = next_buffer;
-        tau = tau_global;
-        do {
-            int64_t sum  = 0;
-            const int16_t *end, *buf;
-            if ( next ) {
-                //digitalWriteFast(4, LOW);
-                buf = buffer + NUM_SAMPLES;
-            }
-            else {
-                //digitalWriteFast(4, HIGH);
-                buf = buffer;
-            }
-            end = buf + HALF_BUFFER;
-            
-            // TODO: How to make faster?
-            do {
-                int16_t current, lag, delta;
-                UNROLL( 8,
-                       lag = *( buf + tau );
-                       current = *buf++;
-                       delta = current - lag;
-                       //sum = multiply_accumulate_32x32_rshift32_rounded(sum, delta, delta);
-                       sum += delta*delta;
-                       );
-            } while ( buf < end );
-            
-            running_sum += sum;
-            yin_buffer[yin_idx] = sum*tau;
-            rs_buffer[yin_idx] = running_sum;
-            yin_idx = ( ++yin_idx >= 5 ) ? 0 : yin_idx;
-            
-            tau = estimate( yin_buffer, rs_buffer, yin_idx, tau );
-            
-            if ( tau == 0 ) {
-                process_buffer  = false;
-                new_output      = true;
-                //digitalWriteFast(0, LOW);
-                return;
-            }
-            else if ( tau >= HALF_BUFFER ) {
-                process_buffer  = false;
-                new_output      = false;
-                //digitalWriteFast(0, LOW);
-                return;
-            }
-            
-        } while ( tau <= cycles );
-        tau_global = tau;
+        tau_global      = 1;
         //digitalWriteFast(0, LOW);
+        return;
     }
+    tau_global = tau;
+    //digitalWriteFast(0, LOW);
 }
 
 /**
@@ -193,9 +165,10 @@ void AudioTuner::update( void ) {
  *  @return tau
  */
 uint16_t AudioTuner::estimate( int64_t *yin, int64_t *rs, uint16_t head, uint16_t tau ) {
-    const int64_t *p = ( int64_t * )yin;
+    const int64_t *y = ( int64_t * )yin;
     const int64_t *r = ( int64_t * )rs;
     uint16_t _tau, _head;
+    const float thresh = yin_threshold;
     _tau = tau;
     _head = head;
     
@@ -209,19 +182,16 @@ uint16_t AudioTuner::estimate( int64_t *yin, int64_t *rs, uint16_t head, uint16_
         idx2 = ( idx2 >= 5 ) ? 0 : idx2;
         
         float s0, s1, s2;
-        s0 = ( ( float )*( p+idx0 ) / *( r+idx0 ) );
-        s1 = ( ( float )*( p+idx1 ) / *( r+idx1 ) );
-        s2 = ( ( float )*( p+idx2 ) / *( r+idx2 ) );
+        s0 = ( ( float )*( y+idx0 ) / *( r+idx0 ) );
+        s1 = ( ( float )*( y+idx1 ) / *( r+idx1 ) );
+        s2 = ( ( float )*( y+idx2 ) / *( r+idx2 ) );
         
-        if ( s1 < yin_threshold && s1 < s2 ) {
+        if ( s1 < thresh && s1 < s2 ) {
             uint16_t period = _tau - 3;
             periodicity = 1 - s1;
             data = period + 0.5f * ( s0 - s2 ) / ( s0 - 2.0f * s1 + s2 );
             return 0;
         }
-        
-        //if ( s1 > 2.4 ) return _tau + 2;
-        //else return _tau + 1;
     }
     return _tau + 1;
 }
@@ -232,18 +202,19 @@ uint16_t AudioTuner::estimate( int64_t *yin, int64_t *rs, uint16_t head, uint16_
  *  @param threshold Allowed uncertainty
  *  @param cpu_max   How much cpu usage before throttling
  */
-void AudioTuner::initialize( float threshold, float cpu_max ) {
+void AudioTuner::initialize( float threshold ) {
     __disable_irq( );
-    cpu_usage_max = cpu_max*100;
-    yin_threshold = threshold;
     process_buffer = false;
+    yin_threshold  = threshold;
     periodicity    = 0.0f;
     next_buffer    = true;
     running_sum    = 0;
-    count_global   = 0;
+    tau_global     = 1;
+    first_run      = true;
     yin_idx        = 1;
-    data           = 0;
     enabled        = true;
+    state          = 0;
+    data           = 0.0f;
     __enable_irq( );
 }
 
@@ -269,7 +240,7 @@ float AudioTuner::read( void ) {
     __disable_irq( );
     float d = data;
     __enable_irq( );
-    return SAMPLE_RATE_EXACT / d;
+    return AUDIO_SAMPLE_RATE_EXACT / d;
 }
 
 /**

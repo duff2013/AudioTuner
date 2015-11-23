@@ -24,62 +24,46 @@
 #define AudioTuner_h_
 
 #include "AudioStream.h"
-/****************************************************************/
-#define SAMPLE_RATE_44100  1      // 44100    sample rate
-#define SAMPLE_RATE_22050  2      // 22050    sample rate
-#define SAMPLE_RATE_11025  4      // 11025    sample rate
-/****************************************************************/
-
 /****************************************************************
  *              Safe to adjust these values below               *
  *                                                              *
- *  These two parameters define how this object works.          *
+ *  This parameter defines the size of the buffer.              *
  *                                                              *
- *  1.  NUM_SAMPLES - Size of the buffer. Since object uses     *
- *      double buffering this value will be 4x in bytes of      *
- *      memory.  !!! Must be power of 2 !!!!                    *
+ *  1.  AUDIO_BLOCKS -  Buffer size is 128 * AUDIO_BLOCKS.      *
+ *                      The more AUDIO_BLOCKS the lower the     *
+ *                      frequency you can detect. The defualt   *
+ *                      (24) is set to measure down to 29.14    *
+ *                      Hz or B(flat)0.                         *
  *                                                              *
- *  2.  SAMPLE_RATE - Just what it says.                        *
- *                                                              *
- *  These two parameters work hand in hand. For example if you  *
- *  want a high sample rate but do not allocate enough buffer   *
- *  space, you will be limit how low of a frequency you can     *
- *  measure. If you then increase the buffer you use up         *
- *  precious ram and slow down the system since it takes longer *
- *  to processes the buffer.                                    *
- *                                                              *
- *  Play around with these values to find what best suits your  *
- *  needs. The max number of buffers you can have is 8192 bins. *
  ****************************************************************/
-// !!! Must be power of 2 !!!!
-#define NUM_SAMPLES 2048 // make a power of two
-
-// Use defined sample rates above^
-#define SAMPLE_RATE SAMPLE_RATE_22050
+#define AUDIO_BLOCKS  24
 /****************************************************************/
-
-class AudioTuner : public AudioStream
-{
+class AudioTuner : public AudioStream {
 public:
     /**
      *  constructor to setup Audio Library and initialize
      *
      *  @return none
      */
-    AudioTuner( void ) : AudioStream( 1, inputQueueArray ), enabled( false ), new_output(false) {}
+    AudioTuner( void ) : AudioStream( 1, inputQueueArray ), enabled( false ), new_output(false) {
+    
+    }
     
     /**
      *  initialize variables and start conversion
      *
      *  @param threshold Allowed uncertainty
      *  @param cpu_max   How much cpu usage before throttling
+     *
+     *  @return none
      */
-    void initialize( float threshold, float cpu_max);
+    void initialize( float threshold );
     
     /**
      *  sets threshold value
      *
      *  @param thresh
+     *  @return none
      */
     void threshold( float p );
     
@@ -105,9 +89,11 @@ public:
     
     /**
      *  Audio Library calls this update function ~2.9ms
+     *
+     *  @return none
      */
     virtual void update( void );
-    
+
 private:
     /**
      *  check the sampled data for fundamental frequency
@@ -121,14 +107,26 @@ private:
      */
     uint16_t estimate( int64_t *yin, int64_t *rs, uint16_t head, uint16_t tau );
     
-    int16_t  buffer[NUM_SAMPLES*2] __attribute__ ( ( aligned ( 4 ) ) );
-    float    periodicity, yin_threshold, data, cpu_usage_max;
-    int64_t  rs_buffer[5], yin_buffer[5];
+    /**
+     *  process audio data
+     *
+     *  @return none
+     */
+    void process( void );
+    
+    /**
+     *  Variables
+     */
     uint64_t running_sum;
-    uint16_t tau_global, count_global, tau_cycles;
-    uint8_t  yin_idx;
-    bool     enabled, process_buffer, next_buffer;
-    volatile bool new_output;
+    uint16_t tau_global;
+    int64_t  rs_buffer[5], yin_buffer[5];
+    int16_t  AudioBuffer[AUDIO_BLOCKS*128] __attribute__ ( ( aligned ( 4 ) ) );
+    uint8_t  yin_idx, state;
+    float    periodicity, yin_threshold, cpu_usage_max, data;
+    bool     enabled, next_buffer, first_run;
+    volatile bool new_output, process_buffer;
+    audio_block_t *blocklist1[AUDIO_BLOCKS];
+    audio_block_t *blocklist2[AUDIO_BLOCKS];
     audio_block_t *inputQueueArray[1];
 };
 #endif

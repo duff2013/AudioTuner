@@ -1,5 +1,5 @@
 <p align="center">
-    <b>Guitar and Bass Tuner Library v2.2</b><br>
+    <b>Guitar and Bass Tuner Library v2.3</b><br>
     <b>Teensy 3.1/2</b><br>
 </p>
 
@@ -40,46 +40,28 @@
                                                        *---<\ P /
                                                              \_/
 
->Many optimizations have been done to the [YIN] algorithm for frequencies between 29-360Hz. 
+>Many optimizations have been done to the [YIN] algorithm for frequencies between 29-400Hz. 
 >>While its still using a brute force method ( n<sup>2</sup> ) for finding the fundamental frequency f<sub>o</sub>, it is tuned to skip certain <b>tau</b> (<img src="http://latex.numberempire.com/render?%5Cinline%20%5Chuge%20%5Cmathbf%7B%5Ctau%7D&sig=845639da85c0dd8e2de679817b06639c"/></img>) values and focus mostly on frequencies found in the bass and guitar. 
 >>>The input is double buffered so while you are processing one buffer it is filling the other to double throughput. 
->>>>There are a few parameters that can be adjusted to "dial in" the algorithm for better estimations located in AudioTuner.h. The defaults below are what I found that have the best trade off for speed and accuracy.
+>>>>The parameter AUDIO_BLOCKS below can be adjusted but its default of 24 I found to be best to work with the guitar and bass frequency range (29- 400)Hz. 
+>>>>Looking into finding the Auto Correlation using FFT and IFFT to speed up processing of data! Not that simple because the YIN algorithm uses a squared difference tweak to the Auto Correlation.
 
 <h4>AudioTuner.h</h4>
 
 ```
-/****************************************************************/
-#define SAMPLE_RATE_44100  1      // 44100    sample rate
-#define SAMPLE_RATE_22050  2      // 22050    sample rate
-#define SAMPLE_RATE_11025  4      // 11025    sample rate
-/****************************************************************/
-
 /****************************************************************
 *              Safe to adjust these values below               *
 *                                                              *
-*  These two parameters define how this object works.          *
+*  This parameter defines the size of the buffer.              *
 *                                                              *
-*  1.  NUM_SAMPLES - Size of the buffer. Since object uses     *
-*      double buffering this value will be 4x in bytes of      *
-*      memory.  !!! Must be power of 2 !!!!                    *
+*  1.  AUDIO_BLOCKS -  Buffer size is 128 * AUDIO_BLOCKS.      *
+*                      The more AUDIO_BLOCKS the lower the     *
+*                      frequency you can detect. The default   *
+*                      (24) is set to measure down to 29.14    *
+*                      Hz or B(flat)0.                         *
 *                                                              *
-*  2.  SAMPLE_RATE - Just what it says.                        *
-*                                                              *
-*  These two parameters work hand in hand. For example if you  *
-*  want a high sample rate but do not allocate enough buffer   *
-*  space, you will be limit how low of a frequency you can     *
-*  measure. If you then increase the buffer you use up         *
-*  precious ram and slow down the system since it takes longer *
-*  to processes the buffer.                                    *
-*                                                              *
-*  Play around with these values to find what best suits your  *
-*  needs. The max number of buffers you can have is 8192 bins. *
 ****************************************************************/
-// !!! Must be power of 2 !!!!
-#define NUM_SAMPLES 2048 // make a power of two
-
-// Use defined sample rates above^
-#define SAMPLE_RATE SAMPLE_RATE_22050
+#define AUDIO_BLOCKS  24
 /****************************************************************/
 ```
 
@@ -95,3 +77,4 @@
 </div>
 
 [YIN]:http://recherche.ircam.fr/equipes/pcm/cheveign/pss/2002_JASA_YIN.pdf
+[Teensy Audio Library]:http://www.pjrc.com/teensy/td_libs_Audio.html

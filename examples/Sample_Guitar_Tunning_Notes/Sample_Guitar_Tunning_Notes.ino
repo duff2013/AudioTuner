@@ -57,16 +57,12 @@ void playNote(void) {
 }
 //---------------------------------------------------------------------------------------
 void setup() {
-    AudioMemory(4);
+    AudioMemory(30);
     /*
      *  Initialize the yin algorithm's absolute
      *  threshold, this is good number.
-     *
-     *  Percent of overall current cpu usage used
-     *  before making the search algorithm less
-     *  aggressive (0.0 - 1.0).
      */
-    tuner.initialize(.15, .99);
+    tuner.initialize(.15);
     pinMode(LED_BUILTIN, OUTPUT);
     playNoteTimer.begin(playNote, 1000);
 }
