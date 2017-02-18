@@ -1,5 +1,5 @@
 <p align="center">
-    <b>Guitar and Bass Tuner Library v2.3</b><br>
+    <b>Guitar and Bass Tuner Library v3.0</b><br>
     <b>Teensy 3.1/2</b><br>
 </p>
 
@@ -49,20 +49,23 @@
 <h4>AudioTuner.h</h4>
 
 ```
-/****************************************************************
-*              Safe to adjust these values below               *
-*                                                              *
-*  This parameter defines the size of the buffer.              *
-*                                                              *
-*  1.  AUDIO_BLOCKS -  Buffer size is 128 * AUDIO_BLOCKS.      *
-*                      The more AUDIO_BLOCKS the lower the     *
-*                      frequency you can detect. The default   *
-*                      (24) is set to measure down to 29.14    *
-*                      Hz or B(flat)0.                         *
-*                                                              *
-****************************************************************/
-#define AUDIO_BLOCKS  24
-/****************************************************************/
+/***********************************************************************
+ *              Safe to adjust these values below                      *
+ *                                                                     *
+ *  This parameter defines the size of the buffer.                     *
+ *                                                                     *
+ *  1.  AUDIO_GUITARTUNER_BLOCKS -  Buffer size is 128 * AUDIO_BLOCKS. *
+ *                      The more AUDIO_GUITARTUNER_BLOCKS the lower    *
+ *                      the frequency you can detect. The default      *
+ *                      (24) is set to measure down to 29.14 Hz        *
+ *                      or B(flat)0.                                   *
+ *                                                                     *
+ *  2.  MAX_COEFF - Maxium number of coefficeints for the FIR filter.  *
+ *                                                                     *
+ ***********************************************************************/
+#define AUDIO_GUITARTUNER_BLOCKS  24
+#define MAX_COEFF                 200
+/***********************************************************************/
 ```
 
 <div>

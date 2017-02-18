@@ -25,6 +25,8 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <SD.h>
+
+#include "coeff.h"
 //---------------------------------------------------------------------------------------
 #include "e2_note.h"
 #include "a2_note.h"
@@ -62,7 +64,7 @@ void setup() {
      *  Initialize the yin algorithm's absolute
      *  threshold, this is good number.
      */
-    tuner.initialize(.15);
+    tuner.begin(.15, fir_22059_HZ_coefficients, sizeof(fir_22059_HZ_coefficients), 2);
     pinMode(LED_BUILTIN, OUTPUT);
     playNoteTimer.begin(playNote, 1000);
 }

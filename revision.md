@@ -1,3 +1,7 @@
+><b>Updated (02/17/17 v3.0)</b><br>
+* Now we decimate the signal before analysis, significant speed up.<br>
+* More robust algorithm to determine the fundamental frequency.<br>
+
 ><b>Updated (11/23/15 v2.3)</b><br>
 * Totally new method to gather and process data, data is available after 24 Blocks of data have been collected (~69.6ms) for all frequencies.<br>
 * Double buffer to collect Audio data, while one collects the other buffer is processed.<br>

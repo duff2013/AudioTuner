@@ -27,6 +27,8 @@
 #include <SPI.h>
 #include <SD.h>
 
+#include "coeff.h"
+
 AudioTuner                tuner;
 AudioSynthWaveformSine    sine;
 AudioOutputAnalog         dac;
@@ -45,7 +47,7 @@ void setup() {
      *  Initialize the yin algorithm's absolute
      *  threshold, this is good number.
      */
-    tuner.initialize(.15);
+    tuner.begin(.15, fir_22059_HZ_coefficients, sizeof(fir_22059_HZ_coefficients), 2);
     
     sine.frequency(30.87);
     sine.amplitude(1);
