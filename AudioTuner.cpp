@@ -20,10 +20,10 @@
  * THE SOFTWARE.
  */
 
-#include "analyze_notefreq_fast.h"
 #include "utility/dspinst.h"
 #include "arm_math.h"
 #include "Arduino.h"
+#include "AudioTuner.h"
 
 #define NUM_SAMPLES ( AUDIO_GUITARTUNER_BLOCKS << 7 )
 
