@@ -1,3 +1,6 @@
+><b>Updated (1/12/18 v3.2)</b><br>
+* Added disable function.<br>
+
 ><b>Updated (12/7/17 v3.1)</b><br>
 * Fix wrong include.<br>
 

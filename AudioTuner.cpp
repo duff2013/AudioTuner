@@ -40,7 +40,7 @@ void AudioTuner::update( void ) {
     }
     
     /**
-     *  "factor" is the new block size calculatedby
+     *  "factor" is the new block size calculated by
      *  the decimated shift to incremnt the buffer
      *  address.
      */
@@ -86,8 +86,7 @@ void AudioTuner::process( int16_t *p ) {
         int16_t * lag = p + tau;
         // unrolling the inner loop by 8
         blkCnt = inner_cycles >> 3;
-        do
-        {
+        do {
             // a(n), b(n), c(n), d(n) each hold two samples
             a1 = *__SIMD32( cur )++;
             a2 = *__SIMD32( cur )++;
@@ -247,9 +246,10 @@ float AudioTuner::probability( void ) {
 }
 
 /**
- *  Initialise parameters.
+ *  New LP coeffients for decimation.
  *
- *  @param thresh    Allowed uncertainty
+ *  @param p    array pointer of coeffients.
+ *  @param n    array size.
  */
 void AudioTuner::coeff( int16_t *p, int n ) {
     //coeff_size = n;
@@ -265,5 +265,16 @@ void AudioTuner::coeff( int16_t *p, int n ) {
 void AudioTuner::threshold( float p ) {
     __disable_irq( );
     yin_threshold = p;
+    __enable_irq( );
+}
+
+/**
+ *  disable yin from processing data, use begin to start back up
+ *
+ *  @return none
+ */
+void disable( void ) {
+    __disable_irq( );
+    enabled = false;
     __enable_irq( );
 }

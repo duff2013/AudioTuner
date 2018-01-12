@@ -134,6 +134,13 @@ private:
     void process( int16_t *p );
     
     /**
+     *  disable yin
+     *
+     *  @return none
+     */
+    void disable( void );
+    
+    /**
      *  Variables
      */
     float    periodicity, yin_threshold, data;
