@@ -107,6 +107,13 @@ public:
     void coeff( int16_t *p, int n );
     
     /**
+     *  disable yin
+     *
+     *  @return none
+     */
+    void disable( void );
+    
+    /**
      *  Audio Library calls this update function ~2.9ms
      *
      *  @return none
@@ -132,13 +139,6 @@ private:
      *  @return none
      */
     void process( int16_t *p );
-    
-    /**
-     *  disable yin
-     *
-     *  @return none
-     */
-    void disable( void );
     
     /**
      *  Variables

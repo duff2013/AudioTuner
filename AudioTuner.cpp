@@ -273,7 +273,7 @@ void AudioTuner::threshold( float p ) {
  *
  *  @return none
  */
-void disable( void ) {
+void AudioTuner::disable( void ) {
     __disable_irq( );
     enabled = false;
     __enable_irq( );

@@ -1,5 +1,5 @@
 <p align="center">
-    <b>Guitar and Bass Tuner Library v3.2</b><br>
+    <b>Guitar and Bass Tuner Library v3.3</b><br>
     <b>Teensy 3.1/2</b><br>
 </p>
 

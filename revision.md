@@ -1,3 +1,6 @@
+><b>Updated (1/17/18 v3.2)</b><br>
+* Fixed disable function.<br>
+
 ><b>Updated (1/12/18 v3.2)</b><br>
 * Added disable function.<br>
 
